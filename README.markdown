@@ -1,214 +1,256 @@
-# Production Planning Optimization
+# Production Planning Optimization 生产计划优化
 
-## Table of Contents
+## Table of Contents 目录
 
-- [Overview](#overview)
-- [Importance in Production Planning](#importance-in-production-planning)
-- [Features](#features)
-- [Mathematical Model](#mathematical-model)
-- [Prerequisites](#prerequisites)
-- [How to Run](#how-to-run)
-- [Example Usage](#example-usage)
-- [Project Structure](#project-structure)
-- [Future Enhancements](#future-enhancements)
-- [License](#license)
-- [Contributing](#contributing)
+- [Overview 概述](#overview-概述)
+- [Features 功能特性](#features-功能特性)
+- [Mathematical Model 数学模型](#mathematical-model-数学模型)
+- [Prerequisites 前置要求](#prerequisites-前置要求)
+- [How to Run 运行方式](#how-to-run-运行方式)
+- [Example Usage 使用示例](#example-usage-使用示例)
+- [Rush Order Handling 临时插单处理](#rush-order-handling-临时插单处理)
+- [Project Structure 项目结构](#project-structure-项目结构)
+- [Future Enhancements 未来改进](#future-enhancements-未来改进)
+- [License 许可证](#license-许可证)
 
-## Overview
+## Overview 概述
 
-The **Production Optimizer** is a web-based application designed to optimize production scheduling in manufacturing environments using Integer Linear Programming (ILP). Built with Python, Streamlit, PuLP, and Pandas, this tool helps production engineers maximize profits by determining the optimal production schedule while considering machine availability, product demands, and production constraints. The application provides a user-friendly interface for inputting parameters and visualizing results, making it an invaluable tool for efficient production planning.
+The **Production Optimizer** is a web-based application designed to optimize production scheduling in manufacturing environments using Integer Linear Programming (ILP). Built with Python, Streamlit, PuLP, and Pandas, this tool helps production engineers maximize profits by determining the optimal production schedule while considering machine availability, product demands, and production constraints.
 
-This project addresses the complex challenge of scheduling production across multiple machines and products, accounting for factors such as batch sizes, setup times, production rates, maintenance costs, and demand penalties. By leveraging ILP, it ensures optimal resource allocation, minimizing costs and unmet demand while maximizing profitability.
+**生产计划优化器**是一个基于 Web 的应用程序，使用整数线性规划（ILP）优化制造环境中的生产调度。该工具使用 Python、Streamlit、PuLP 和 Pandas 构建，帮助生产工程师在考虑机器可用性、产品需求和生产约束的同时最大化利润。
 
-## Importance in Production Planning
+## Features 功能特性
 
-In manufacturing, efficient production planning is critical to reducing costs, meeting demand, and optimizing resource utilization. The Production Optimizer addresses these needs by:
+1. **Input Flexibility 输入灵活性**:
+   - Support for custom number of products and machines via comma-separated inputs
+   - Customizable parameters for products (profit, setup time, min/max batch sizes, demand, penalties, priority)
+   - Machine-specific production rates for each product
+   - 支持通过逗号分隔输入自定义数量的产品和机器
+   - 可自定义产品参数（利润、设置时间、最小/最大批量、需求、惩罚成本、优先级）
+   - 支持为每个产品定义特定机器的生产速率
 
-- **Maximizing Profitability**: Balances production output with costs (maintenance and penalties for unmet demand) to achieve the highest possible profit.
-- **Optimizing Resource Utilization**: Ensures machines are used efficiently within their available hours, reducing idle time and overutilization.
-- **Handling Complex Constraints**: Accounts for real-world constraints such as batch size limits, setup times, and machine-specific production rates.
-- **Scalability and Modularity**: Supports any number of products and machines, making it adaptable to various manufacturing scenarios.
-- **User-Friendly Interface**: Simplifies data input and result interpretation through an intuitive Streamlit interface, reducing the learning curve for production engineers.
-- **Scenario Analysis**: Allows users to test different scenarios (e.g., machine downtime or increased demand), enabling proactive decision-making.
+2. **Optimization Model 优化模型**:
+   - Utilizes PuLP to formulate and solve an ILP model that maximizes profit
+   - Decision variables include batch counts and machine assignments
+   - Accounts for unmet demand with penalty costs
+   - Supports product priorities and rush orders
+   - 使用 PuLP 构建并求解最大化利润的 ILP 模型
+   - 决策变量包括批量数量和机器分配
+   - 考虑未满足需求的惩罚成本
+   - 支持产品优先级和临时插单
 
-This tool is particularly valuable in industries where production schedules are complex, resources are limited, and demand fluctuates, such as electronics, automotive, or consumer goods manufacturing.
+3. **Rush Order Support 临时插单支持**:
+   - Dynamic rush order handling with configurable priority multiplier
+   - Visual indication of rush order impact on original orders
+   - Automatic capacity reallocation to prioritize rush orders
+   - 动态插单处理，支持可配置的优先级倍数
+   - 可视化显示插单对原订单的影响
+   - 自动重新分配产能以优先满足插单需求
 
-## Features
+4. **Interactive UI 交互式界面**:
+   - Built with Streamlit for a clean, responsive web interface
+   - Dynamic data tables for inputting parameters
+   - Bilingual (Chinese/English) interface support
+   - 使用 Streamlit 构建简洁响应式的 Web 界面
+   - 动态数据表用于输入参数
+   - 支持中英文双语界面
 
-1. **Input Flexibility**:
-   - Users can define any number of products and machines via comma-separated inputs.
-   - Supports customizable parameters for products (profit, setup time, min/max batch sizes, demand, penalty costs) and machines (available hours, maintenance costs).
-   - Allows specification of machine-specific production rates for each product.
+5. **Visualization 可视化**:
+   - Machine utilization bar charts
+   - Production vs demand comparison charts
+   - Stacked charts showing original demand vs rush orders
+   - Clear result presentation with summaries
+   - 机器利用率柱状图
+   - 产量对比需求图表
+   - 堆叠图表展示原订单与插单对比
+   - 清晰的结果展示和摘要
 
-2. **Optimization Model**:
-   - Utilizes PuLP to formulate and solve an ILP model that maximizes profit.
-   - Decision variables include the number of batches per product, machine, and batch type (min/max), and binary variables for machine assignment.
-   - Accounts for unmet demand with associated penalty costs.
-   - Constraints ensure realistic scheduling (e.g., one product per machine per day, adherence to available hours, batch size limits).
+6. **Data Persistence 数据持久化**:
+   - Save and load configurations
+   - Example data for quick testing
+   - 保存和加载配置
+   - 示例数据用于快速测试
 
-3. **Interactive User Interface**:
-   - Built with Streamlit for a clean, responsive web interface.
-   - Features dynamic data tables for inputting product and machine parameters.
-   - Displays results in a clear, organized format, including production schedules, machine utilization, and total profit.
+7. **Input Validation 输入验证**:
+   - Comprehensive validation for all input parameters
+   - Real-time error feedback
+   - 全面的输入参数验证
+   - 实时错误反馈
 
-4. **Comprehensive Results**:
-   - Outputs the optimization status (e.g., Optimal, Infeasible).
-   - Provides detailed production summaries, including batch assignments, units produced, and unmet demand.
-   - Shows machine utilization metrics (hours used vs. available and percentage utilization).
+## Mathematical Model 数学模型
 
-5. **Scenario Testing**:
-   - Supports what-if analysis, such as simulating machine downtime (e.g., setting Machine Y's available hours to 0) or changes in product demand (e.g., tripling demand for Product B).
-   - Demonstrates robustness by handling varied inputs and constraints.
+### Decision Variables 决策变量
 
-6. **Modular Backend**:
-   - Separates optimization logic (`Backend.py`) from the frontend (`app.py`) for maintainability and scalability.
-   - Easily extensible for additional constraints or objective function modifications.
+- $x_{p,m,b}$: Number of batches of product $p$ on machine $m$ with batch type $b$
+- $y_{p,m,b}$: Binary variable (1 if product $p$ is assigned to machine $m$ with batch type $b$)
+- $u_p$: Unmet demand for product $p$
+- $u^r_p$: Unmet rush order for product $p$
 
-## Mathematical Model
+### Objective Function 目标函数
 
-The Production Optimizer uses an Integer Linear Programming (ILP) model to maximize profit. Below are the key components of the mathematical formulation, implemented in `Backend.py`.
+Maximize total profit with priority and rush order support:
 
-### Decision Variables
+$\max Z = \sum_{p \in P} \left[ \text{Priority}_p \cdot \text{Profit}_p \cdot \sum_{m \in M} \sum_{b \in B} x_{p,m,b} \cdot \text{BatchSize}_{p,b} - \text{Penalty}_p \cdot u_p - \text{Penalty}_p \cdot \text{RushMultiplier} \cdot u^r_p \right] - \sum_{m \in M} \sum_{p \in P} \sum_{b \in B} \text{Maintenance}_m \cdot y_{p,m,b}$
 
-- $x_{p,m,b}$: Number of batches of product $p$ on machine $m$ with batch type $b$ (min or max), integer, $\geq 0$.
-- $y_{p,m,b}$: Binary variable, 1 if product $p$ is assigned to machine $m$ with batch type $b$, 0 otherwise.
-- $u_p$: Unmet demand for product $p$, integer, $\geq 0$.
+### Constraints 约束条件
 
-### Objective Function
+1. **Machine Assignment**: Each machine can produce at most one product per day
+2. **Machine Time**: Total time (production + setup) ≤ available hours
+3. **Batch Type Exclusivity**: At most one batch type per product-machine pair
+4. **Demand Satisfaction**: Production + unmet demand = total demand (original + rush)
+5. **Rush Order Priority**: Production ≥ rush order quantity (when rush orders exist)
 
-Maximize total profit, accounting for revenue, penalty costs for unmet demand, and maintenance costs:
+## Prerequisites 前置要求
 
-$\max Z = \sum_{p \in P} \left[ \text{Profit}_p \cdot \sum_{m \in M} \sum_{b \in B} x_{p,m,b} \cdot \text{BatchSize}_{p,b} - \text{Penalty}_p \cdot u_p \right] - \sum_{m \in M} \sum_{p \in P} \sum_{b \in B} \text{Maintenance}_m \cdot y_{p,m,b}$
-
-Where:
-- $P$: Set of products.
-- $M$: Set of machines.
-- $B$: Set of batch types (min, max).
-- $\text{Profit}_p$: Profit per unit of product $p$.
-- $\text{BatchSize}_{p,b}$: Batch size for product $p$ and batch type $b$.
-- $\text{Penalty}_p$: Penalty cost per unmet unit of product $p$.
-- $\text{Maintenance}_m$: Maintenance cost for machine $m$.
-
-### Constraints
-
-1. **Machine Assignment**:
-   Each machine can produce at most one product per day:
-   $\sum_{p \in P} \sum_{b \in B} y_{p,m,b} \leq 1 \quad \forall m \in M$
-
-2. **Machine Time**:
-   Total time (production + setup) on each machine must not exceed available hours:
-   $\sum_{p \in P} \sum_{b \in B} \left( \frac{x_{p,m,b} \cdot \text{BatchSize}_{p,b}}{\text{Rate}_{p,m}} + \text{SetupTime}_p \cdot y_{p,m,b} \right) \leq \text{AvailableHours}_m \quad \forall m \in M$
-
-3. **Batch Type Exclusivity**:
-   For each product-machine pair, at most one batch type (min or max) can be used:
-   $y_{p,m,\text{min}} + y_{p,m,\text{max}} \leq 1 \quad \forall (p,m) \in \text{Rates}$
-
-4. **Batch Activation**:
-   Batches are only produced if the corresponding $y$ variable is 1:
-   $x_{p,m,b} \leq 50000 \cdot y_{p,m,b} \quad \forall p \in P, m \in M, b \in B$
-
-5. **Demand Satisfaction**:
-   Production plus unmet demand equals total demand:
-   $\sum_{m \in M} \sum_{b \in B} x_{p,m,b} \cdot \text{BatchSize}_{p,b} + u_p = \text{Demand}_p \quad \forall p \in P$
-
-## Prerequisites
-
-To run the Production Optimizer, ensure you have the following installed:
-
-- **Python**: Version 3.8 or higher.
+- **Python**: Version 3.8 or higher
 - **Required Libraries**:
-  - `streamlit`: For the web interface.
-  - `pulp`: For solving the ILP model.
-  - `pandas`: For data handling and table inputs.
-- Install dependencies using:
-  ```bash
-  pip install streamlit pulp pandas
-  ```
+  - `streamlit`: Web interface
+  - `pulp`: ILP solver
+  - `pandas`: Data handling
+  - `plotly`: Visualization
 
-## How to Run
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-1. **Clone the Repository**:
+## How to Run 运行方式
+
+1. **Clone the Repository 克隆仓库**:
    ```bash
-   git clone https://github.com/your-username/production-optimizer.git
-   cd production-optimizer
+   git clone https://github.com/skytodmoon/Production-Planning-Optimization.git
+   cd Production-Planning-Optimization
    ```
 
-2. **Install Dependencies**:
+2. **Install Dependencies 安装依赖**:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the Application**:
+3. **Run the Application 运行应用**:
    ```bash
    streamlit run app.py
    ```
-   This will launch the web interface in your default browser.
 
-4. **Using the Application**:
-   - **Step 1: Define Machines and Products**:
-     - Enter comma-separated names for machines (e.g., `W, X, Y, Z`) and products (e.g., `A, B, C`).
-   - **Step 2: Enter Product Parameters**:
-     - Input parameters like profit per unit, setup time, min/max batch sizes, demand, and penalty costs in the provided table.
-   - **Step 3: Define Machine Parameters**:
-     - Specify available hours and maintenance costs for each machine.
-   - **Step 4: Define Production Rates**:
-     - Enter production rates (units/hour) for each product-machine combination.
-   - **Step 5: Optimize**:
-     - Click the "Optimize Production" button to run the ILP model.
-   - **View Results**:
-     - Review the optimization status, total profit, production summary, unmet demand, and machine utilization.
+4. **Using the Application 使用应用**:
+   - **Step 1**: Enter machine and product names
+   - **Step 2**: Input product parameters (including priority)
+   - **Step 3**: Define machine parameters
+   - **Step 4**: Set production rates
+   - **Step 5**: Enable rush orders (optional) and set quantities
+   - **Step 6**: Click "Optimize Production"
+   - **步骤1**: 输入机器和产品名称
+   - **步骤2**: 输入产品参数（包括优先级）
+   - **步骤3**: 定义机器参数
+   - **步骤4**: 设置生产速率
+   - **步骤5**: 启用插单功能（可选）并设置数量
+   - **步骤6**: 点击"优化生产计划"
 
-## Example Usage
+## Example Usage 使用示例
 
-### Scenario 1: Normal Operations
-- **Input**:
-  - Machines: `W, X, Y, Z`
-  - Products: `A, B, C`
-  - Product Parameters (example):
-    - Product A: Profit $100, Setup 30 min, Min Batch 5, Max Batch 20, Demand 150, Penalty $50
-    - Product B: Profit $80, Setup 20 min, Min Batch 8, Max Batch 30, Demand 330, Penalty $40
-    - Product C: Profit $120, Setup 25 min, Min Batch 4, Max Batch 15, Demand 150, Penalty $60
-  - Machine Parameters:
-    - Machine W: 8 hours, $100 maintenance
-    - Machine X: 12 hours, $150 maintenance
-    - Machine Y: 10 hours, $120 maintenance
-    - Machine Z: 9 hours, $110 maintenance
-  - Production Rates: Vary by product-machine combination.
-- **Output**:
-  - Status: Optimal
-  - Total Profit: $43,820
-  - Production Summary: Details batches and units produced (e.g., Product A on Machine W: 15 min batches, 75 units).
-  - Unmet Demand: Lists any shortfall (e.g., 75 units unmet for Product A).
-  - Machine Utilization: Shows hours used and percentage (e.g., Machine W: 7.75 hours, 96.88%).
+### Scenario 1: Normal Operations 正常运营场景
 
-### Scenario 2: Machine Y Breakdown
-- **Input Change**: Set Machine Y's available hours to 0.
-- **Output**:
-  - Total Profit: $38,260
-  - Production shifts to other machines (e.g., Product C only on Machine Z).
-  - Machine Y: 0 hours used.
+**Input 输入**:
+- Machines: `W, X, Y, Z`
+- Products: `A, B, C`
 
-### Scenario 3: Tripled Demand for Product B
-- **Input Change**: Increase Product B's demand to 990 units.
-- **Output**: Adjusts batch assignments to meet new demand, with potential increases in unmet demand if constrained by machine hours.
+**Product Parameters 产品参数**:
+| Product | Profit | Setup Time | Min Batch | Max Batch | Demand | Penalty | Priority |
+|---------|--------|------------|-----------|-----------|--------|---------|----------|
+| A | $100 | 30 min | 5 | 20 | 150 | $50 | 1.0 |
+| B | $80 | 20 min | 8 | 30 | 330 | $40 | 1.0 |
+| C | $120 | 25 min | 4 | 15 | 150 | $60 | 1.0 |
 
-## Project Structure
+**Machine Parameters 机器参数**:
+| Machine | Available Hours | Maintenance Cost |
+|---------|-----------------|------------------|
+| W | 8 | $100 |
+| X | 12 | $150 |
+| Y | 10 | $120 |
+| Z | 9 | $110 |
 
-- `app.py`: Frontend Streamlit application for user interface and interaction.
-- `Backend.py`: Contains the ILP model solver and result calculations.
-- `requirements.txt`: Lists required Python libraries.
+**Output 输出**:
+- Status: Optimal
+- Total Profit: $43,820
 
-## Future Enhancements
+### Quick Start 快速开始
 
-- **Data Persistence**: Add support for saving and loading input configurations.
-- **Advanced Constraints**: Incorporate additional constraints like labor availability or storage limits.
-- **Visualization**: Include graphical outputs (e.g., Gantt charts) for production schedules.
-- **API Integration**: Enable integration with external systems for real-time data input.
+Click **"Load Example Data"** button to load pre-configured example data and test the optimization immediately.
 
-## License
+点击 **"加载示例数据"** 按钮加载预设的示例数据，立即测试优化功能。
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+## Rush Order Handling 临时插单处理
 
-## Contributing
+### How It Works 工作原理
 
-Contributions are welcome! Please submit a pull request or open an issue to discuss improvements or bug fixes.
+When rush orders are enabled, the system:
+1. Adds rush order quantities to the total demand
+2. Applies a configurable priority multiplier to rush orders
+3. Prioritizes rush orders over regular orders
+4. Shows the impact on original orders
+
+启用插单功能时，系统会：
+1. 将插单数量添加到总需求中
+2. 对插单应用可配置的优先级倍数
+3. 优先满足插单需求
+4. 显示对原订单的影响
+
+### Example: Handling Rush Orders 插单示例
+
+**Scenario**: After planning production for Products A, B, C, a rush order for 50 units of Product A arrives.
+
+**场景**: 在为产品 A、B、C 制定生产计划后，收到产品 A 的紧急插单 50 单位。
+
+**Steps 步骤**:
+1. Enable "Rush Orders" checkbox
+2. Set "Rush Priority Multiplier" to 2.0
+3. Enter 50 in the "Rush Quantity" field for Product A
+4. Click "Optimize Production"
+
+**Expected Results 预期结果**:
+- The system will prioritize the 50-unit rush order for Product A
+- The original demand may be partially unmet if capacity is limited
+- The results will show:
+  - Rush order satisfaction status
+  - Impact on original orders
+  - Updated production schedule
+
+### Priority Multiplier 优先级倍数
+
+The rush priority multiplier determines how much priority rush orders get:
+- **1.0**: No priority boost (same as regular orders)
+- **2.0**: Double priority (rush orders are twice as important)
+- **5.0**: Maximum priority boost
+
+插单优先级倍数决定插单获得的优先程度：
+- **1.0**: 无优先级提升（与普通订单相同）
+- **2.0**: 双倍优先级（插单重要性是普通订单的两倍）
+- **5.0**: 最大优先级提升
+
+## Project Structure 项目结构
+
+```
+Production-Planning-Optimization/
+├── app.py              # Frontend Streamlit application with rush order UI
+├── Backend.py          # ILP model solver with priority and rush order support
+├── requirements.txt    # Required Python libraries
+├── Logo.png            # Application logo
+└── README.markdown     # Project documentation
+```
+
+## Future Enhancements 未来改进
+
+- [ ] Advanced constraints (labor, storage limits)
+- [ ] Gantt chart visualization for production schedules
+- [ ] API integration for real-time data input
+- [ ] Multi-period planning support
+- [ ] What-if scenario comparison
+- [ ] 高级约束（劳动力、存储限制）
+- [ ] 生产调度甘特图可视化
+- [ ] API 集成支持实时数据输入
+- [ ] 多周期规划支持
+- [ ] 场景对比分析
+
+## License 许可证
+
+This project is licensed under the MIT License. See the LICENSE file for details.
